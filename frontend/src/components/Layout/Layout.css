@@ -1,0 +1,6 @@
+.main-content{
+  flex:1;
+  padding-top:80px;
+  min-height:calc(100vh - 160px);
+  background:var(--background);
+}
