@@ -11,18 +11,21 @@ const taskSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+      trim: true,
     },
 
     project: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
+      index: true,
     },
 
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
 
     assignedBy: {
@@ -35,15 +38,18 @@ const taskSchema = new mongoose.Schema(
       type: String,
       enum: ["Todo", "In Progress", "Completed"],
       default: "Todo",
+      index: true,
     },
 
     dueDate: {
       type: Date,
       required: true,
+      index: true,
     },
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

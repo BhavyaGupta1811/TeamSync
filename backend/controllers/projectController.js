@@ -1,9 +1,20 @@
 const Project = require("../models/Project");
 const Task = require("../models/Task");
+
 // Create Project
 const createProject = async (req, res) => {
   try {
-    const { title, description, startDate, endDate, teamMembers } = req.body;
+    let { title, description, startDate, endDate, teamMembers } = req.body;
+
+    title = title?.trim();
+    description = description?.trim();
+
+    if (!title || !startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, start date and end date are required",
+      });
+    }
 
     // Validate dates
     if (new Date(endDate) < new Date(startDate)) {
@@ -26,13 +37,15 @@ const createProject = async (req, res) => {
       .populate("manager", "name email role")
       .populate("teamMembers", "name email role");
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Project created successfully",
       project: createdProject,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Create Project Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -48,9 +61,9 @@ const getProjects = async (req, res) => {
 
     const projectsWithStatus = await Promise.all(
       projects.map(async (project) => {
-        const tasks = await Task.find({ project: project._id }).select(
-          "status",
-        );
+        const tasks = await Task.find({
+          project: project._id,
+        }).select("status");
 
         let status = "Active";
 
@@ -71,13 +84,15 @@ const getProjects = async (req, res) => {
       }),
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: projectsWithStatus.length,
       projects: projectsWithStatus,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get Projects Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -98,7 +113,9 @@ const getProjectById = async (req, res) => {
       });
     }
 
-    const tasks = await Task.find({ project: project._id }).select("status");
+    const tasks = await Task.find({
+      project: project._id,
+    }).select("status");
 
     let status = "Active";
 
@@ -109,7 +126,7 @@ const getProjectById = async (req, res) => {
       status = "Completed";
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       project: {
         ...project.toObject(),
@@ -120,7 +137,9 @@ const getProjectById = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get Project Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -139,11 +158,14 @@ const updateProject = async (req, res) => {
       });
     }
 
-    const { title, description, startDate, endDate, teamMembers } = req.body;
+    let { title, description, startDate, endDate, teamMembers } = req.body;
 
-    // Validate dates only if both are available
+    title = title?.trim();
+    description = description?.trim();
+
     const newStartDate =
       startDate !== undefined ? new Date(startDate) : project.startDate;
+
     const newEndDate =
       endDate !== undefined ? new Date(endDate) : project.endDate;
 
@@ -154,25 +176,11 @@ const updateProject = async (req, res) => {
       });
     }
 
-    if (title !== undefined) {
-      project.title = title;
-    }
-
-    if (description !== undefined) {
-      project.description = description;
-    }
-
-    if (startDate !== undefined) {
-      project.startDate = startDate;
-    }
-
-    if (endDate !== undefined) {
-      project.endDate = endDate;
-    }
-
-    if (teamMembers !== undefined) {
-      project.teamMembers = teamMembers;
-    }
+    if (title !== undefined) project.title = title;
+    if (description !== undefined) project.description = description;
+    if (startDate !== undefined) project.startDate = startDate;
+    if (endDate !== undefined) project.endDate = endDate;
+    if (teamMembers !== undefined) project.teamMembers = teamMembers;
 
     await project.save();
 
@@ -180,13 +188,15 @@ const updateProject = async (req, res) => {
       .populate("manager", "name email role")
       .populate("teamMembers", "name email role");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Project updated successfully",
       project: updatedProject,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Update Project Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -205,12 +215,14 @@ const deleteProject = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Project deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Delete Project Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

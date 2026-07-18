@@ -6,16 +6,19 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
 
     message: {
       type: String,
       required: true,
+      trim: true,
     },
 
     type: {
       type: String,
       default: "Task",
+      trim: true,
     },
 
     read: {
@@ -25,6 +28,7 @@ const notificationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

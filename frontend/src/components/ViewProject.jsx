@@ -3,12 +3,15 @@ import { FaTimes } from "react-icons/fa";
 import "../styles/Modal.css";
 
 function ViewProject({ project, close }) {
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString("en-IN", {
+  const formatDate = (date) => {
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
+  };
 
   return (
     <div className="modal-overlay">
@@ -26,23 +29,23 @@ function ViewProject({ project, close }) {
         <div className="project-view">
           <div className="view-section">
             <h3>Title</h3>
-            <p>{project.title}</p>
+            <p>{project?.title}</p>
           </div>
 
           <div className="view-section">
             <h3>Description</h3>
-            <p>{project.description}</p>
+            <p>{project?.description}</p>
           </div>
 
           <div className="view-section">
             <h3>Project Manager</h3>
-            <p>{project.manager?.name}</p>
+            <p>{project?.manager?.name || "-"}</p>
           </div>
 
           <div className="view-section">
             <h3>Team Members</h3>
 
-            {project.teamMembers?.length > 0 ? (
+            {project?.teamMembers?.length > 0 ? (
               <ul className="member-list">
                 {project.teamMembers.map((member) => (
                   <li key={member._id}>{member.name}</li>
@@ -56,28 +59,29 @@ function ViewProject({ project, close }) {
           <div className="view-row">
             <div className="view-section">
               <h3>Start Date</h3>
-              <p>{formatDate(project.startDate)}</p>
+              <p>{formatDate(project?.startDate)}</p>
             </div>
 
             <div className="view-section">
               <h3>End Date</h3>
-              <p>{formatDate(project.endDate)}</p>
+              <p>{formatDate(project?.endDate)}</p>
             </div>
           </div>
 
           <div className="view-row">
             <div className="view-section">
               <h3>Created</h3>
-              <p>{formatDate(project.createdAt)}</p>
+              <p>{formatDate(project?.createdAt)}</p>
             </div>
 
             <div className="view-section">
               <h3>Last Updated</h3>
-              <p>{formatDate(project.updatedAt)}</p>
+              <p>{formatDate(project?.updatedAt)}</p>
             </div>
           </div>
 
           <button
+            type="button"
             className="primary-btn"
             onClick={close}
             style={{ width: "100%", marginTop: "20px" }}

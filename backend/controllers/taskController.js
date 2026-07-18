@@ -1,10 +1,21 @@
 const Task = require("../models/Task");
+const Project = require("../models/Project");
 const Notification = require("../models/Notification");
+
 // Create Task
 const createTask = async (req, res) => {
   try {
-    const { title, description, project, assignedTo, dueDate, status } =
-      req.body;
+    let { title, description, project, assignedTo, dueDate, status } = req.body;
+
+    title = title?.trim();
+    description = description?.trim();
+
+    if (!title || !project || !assignedTo) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, project and assigned user are required",
+      });
+    }
 
     // Check project exists
     const existingProject = await Project.findById(project);
@@ -50,29 +61,26 @@ const createTask = async (req, res) => {
     });
 
     // Create notification for assigned user
-
     await Notification.create({
       user: assignedTo,
-
       message: `You have been assigned a new task: ${title}`,
-
       type: "Task",
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Task created successfully",
       task,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Create Task Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
-// Get All Tasks
 
 // Get Tasks
 const getTasks = async (req, res) => {
@@ -113,13 +121,15 @@ const getTasks = async (req, res) => {
         .populate("assignedBy", "name email role");
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: tasks.length,
       tasks,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get Tasks Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -167,20 +177,19 @@ const getProjectTasks = async (req, res) => {
       .populate("assignedBy", "name email role")
       .populate("project", "title");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       tasks,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get Project Tasks Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
-// Update Task Status
-const Project = require("../models/Project");
 
 // Update Task Status
 const updateTaskStatus = async (req, res) => {
@@ -228,13 +237,15 @@ const updateTaskStatus = async (req, res) => {
 
     await task.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Task status updated",
       task,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Update Task Status Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -257,10 +268,7 @@ const updateTask = async (req, res) => {
     if (req.user.role === "Project Manager") {
       const project = await Project.findById(task.project);
 
-      if (
-        !project ||
-        project.manager.toString() !== req.user._id.toString()
-      ) {
+      if (!project || project.manager.toString() !== req.user._id.toString()) {
         return res.status(403).json({
           success: false,
           message: "Not authorized",
@@ -268,29 +276,25 @@ const updateTask = async (req, res) => {
       }
     }
 
-    const {
-      title,
-      description,
-      assignedTo,
-      dueDate,
-      status,
-    } = req.body;
+    const { title, description, assignedTo, dueDate, status } = req.body;
 
-    task.title = title || task.title;
-    task.description = description || task.description;
+    task.title = title?.trim() || task.title;
+    task.description = description?.trim() || task.description;
     task.assignedTo = assignedTo || task.assignedTo;
     task.dueDate = dueDate || task.dueDate;
     task.status = status || task.status;
 
     await task.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Task updated successfully",
       task,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Update Task Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -326,12 +330,14 @@ const deleteTask = async (req, res) => {
 
     await task.deleteOne();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Task deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Delete Task Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

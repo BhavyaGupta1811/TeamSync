@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   FaPlus,
   FaFolderOpen,
@@ -19,35 +19,45 @@ import EditProject from "../components/EditProject";
 import DeleteProject from "../components/DeleteProject";
 
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 import "../styles/Projects.css";
 
 function Projects() {
+  const { user } = useAuth();
+
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [showCreate, setShowCreate] = useState(false);
-  
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-
   const [showView, setShowView] = useState(false);
 
+  const [selectedProject, setSelectedProject] = useState(null);
   const [loadingProject, setLoadingProject] = useState(false);
 
+  const canManage = user?.role === "Admin" || user?.role === "Project Manager";
 
-  const fetchProjects = async () => {
+  const canDelete = user?.role === "Admin";
+
+  const fetchProjects = useCallback(async () => {
     try {
+      setLoading(true);
+
       const res = await api.get("/projects");
-      setProjects(res.data.projects);
+
+      setProjects(res.data.projects || []);
     } catch (error) {
-      toast.error("Unable to load projects");
+      toast.error(error.response?.data?.message || "Unable to load projects.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
   const openView = async (projectId) => {
     try {
@@ -75,12 +85,22 @@ function Projects() {
     setShowDelete(true);
   };
 
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString("en-IN", {
+  const closeAllModals = () => {
+    setShowView(false);
+    setShowEdit(false);
+    setShowDelete(false);
+    setSelectedProject(null);
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
+  };
 
   return (
     <div className="page-layout">
@@ -95,14 +115,18 @@ function Projects() {
             <p>Manage and track all projects</p>
           </div>
 
-          <button className="primary-btn" onClick={() => setShowCreate(true)}>
-            <FaPlus />
-            Create Project
-          </button>
+          {canManage && (
+            <button className="primary-btn" onClick={() => setShowCreate(true)}>
+              <FaPlus />
+              Create Project
+            </button>
+          )}
         </div>
 
         <div className="project-grid">
-          {projects.length > 0 ? (
+          {loading ? (
+            <p>Loading projects...</p>
+          ) : projects.length > 0 ? (
             projects.map((project) => {
               const active = new Date(project.endDate) >= new Date();
 
@@ -144,34 +168,40 @@ function Projects() {
 
                   <div className="project-footer">
                     <span
-                      className={`status ${
-                        project.status === "Completed" ? "completed" : "active"
-                      }`}
+                      className={`status ${active ? "active" : "completed"}`}
                     >
-                      {project.status}
+                      {active ? "Active" : "Completed"}
                     </span>
 
                     <div className="project-actions">
                       <button
                         className="view-btn"
                         onClick={() => openView(project._id)}
+                        disabled={loadingProject}
+                        title="View Project"
                       >
                         <FaEye />
                       </button>
 
-                      <button
-                        className="edit-btn"
-                        onClick={() => openEdit(project)}
-                      >
-                        <FaEdit />
-                      </button>
+                      {canManage && (
+                        <button
+                          className="edit-btn"
+                          onClick={() => openEdit(project)}
+                          title="Edit Project"
+                        >
+                          <FaEdit />
+                        </button>
+                      )}
 
-                      <button
-                        className="delete-btn"
-                        onClick={() => openDelete(project)}
-                      >
-                        <FaTrash />
-                      </button>
+                      {canDelete && (
+                        <button
+                          className="delete-btn"
+                          onClick={() => openDelete(project)}
+                          title="Delete Project"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -189,23 +219,14 @@ function Projects() {
           />
         )}
 
-        {showView && !loadingProject && selectedProject && (
-          <ViewProject
-            project={selectedProject}
-            close={() => {
-              setShowView(false);
-              setSelectedProject(null);
-            }}
-          />
+        {showView && selectedProject && !loadingProject && (
+          <ViewProject project={selectedProject} close={closeAllModals} />
         )}
 
         {showEdit && selectedProject && (
           <EditProject
             project={selectedProject}
-            close={() => {
-              setShowEdit(false);
-              setSelectedProject(null);
-            }}
+            close={closeAllModals}
             refresh={fetchProjects}
           />
         )}
@@ -213,10 +234,7 @@ function Projects() {
         {showDelete && selectedProject && (
           <DeleteProject
             project={selectedProject}
-            close={() => {
-              setShowDelete(false);
-              setSelectedProject(null);
-            }}
+            close={closeAllModals}
             refresh={fetchProjects}
           />
         )}

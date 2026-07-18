@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FaAngleDown, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 import api from "../services/api";
 
 import "../styles/Modal.css";
-import { FaAngleDown } from "react-icons/fa";
+
 function EditProject({ project, close, refresh }) {
   const [users, setUsers] = useState([]);
   const [showMembers, setShowMembers] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const dropdownRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -19,18 +21,35 @@ function EditProject({ project, close, refresh }) {
     teamMembers: [],
   });
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await api.get("/users");
+
+      setUsers(
+        (res.data.users || []).filter((user) => user.role === "Team Member"),
+      );
+    } catch (error) {
+      toast.error("Unable to load team members.");
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
+  }, [fetchUsers]);
 
-    if (project) {
-      setForm({
-        title: project.title,
-        description: project.description,
-        startDate: project.startDate.slice(0, 10),
-        endDate: project.endDate.slice(0, 10),
-        teamMembers: project.teamMembers.map((member) => member._id),
-      });
-    }
+  useEffect(() => {
+    if (!project) return;
+
+    setForm({
+      title: project.title || "",
+      description: project.description || "",
+      startDate: project.startDate?.slice(0, 10) || "",
+      endDate: project.endDate?.slice(0, 10) || "",
+      teamMembers:
+        project.teamMembers?.map((member) =>
+          typeof member === "object" ? member._id : member,
+        ) || [],
+    });
   }, [project]);
 
   useEffect(() => {
@@ -42,23 +61,17 @@ function EditProject({ project, close, refresh }) {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const res = await api.get("/users");
-
-      setUsers(res.data.users.filter((user) => user.role === "Team Member"));
-    } catch (error) {
-      toast.error("Unable to load team members.");
-    }
-  };
-
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -88,6 +101,8 @@ function EditProject({ project, close, refresh }) {
     }
 
     try {
+      setLoading(true);
+
       await api.put(`/projects/${project._id}`, form);
 
       toast.success("Project updated successfully.");
@@ -95,10 +110,13 @@ function EditProject({ project, close, refresh }) {
       setShowMembers(false);
 
       refresh();
-
       close();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Unable to update project.");
+      toast.error(
+        error?.response?.data?.message || "Unable to update project.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,13 +197,13 @@ function EditProject({ project, close, refresh }) {
             <span>{selectedText}</span>
 
             <span className={`arrow ${showMembers ? "rotate" : ""}`}>
-              <FaAngleDown/>
+              <FaAngleDown />
             </span>
           </button>
 
           {showMembers && (
             <div className="select-dropdown">
-              {users.length > 0 ? (
+              {users.length ? (
                 users.map((user) => (
                   <label key={user._id} className="checkbox-item">
                     <input
@@ -204,8 +222,8 @@ function EditProject({ project, close, refresh }) {
           )}
         </div>
 
-        <button type="submit" className="submit-btn">
-          Update Project
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Updating..." : "Update Project"}
         </button>
       </form>
     </div>

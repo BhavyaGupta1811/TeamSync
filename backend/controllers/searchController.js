@@ -5,9 +5,11 @@ const User = require("../models/User");
 // Global Search
 const search = async (req, res) => {
   try {
-    const { query, status } = req.query;
+    let { query, status } = req.query;
 
-    let result = {};
+    query = query?.trim();
+
+    const result = {};
 
     if (query) {
       result.projects = await Project.find({
@@ -34,16 +36,18 @@ const search = async (req, res) => {
 
     if (status) {
       result.tasks = await Task.find({
-        status: status,
+        status,
       }).populate("assignedTo", "name email");
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       result,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Search Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

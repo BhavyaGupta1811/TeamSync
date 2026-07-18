@@ -3,7 +3,16 @@ const Comment = require("../models/Comment");
 // Add Comment
 const addComment = async (req, res) => {
   try {
-    const { task, message } = req.body;
+    let { task, message } = req.body;
+
+    message = message?.trim();
+
+    if (!task || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "Task and message are required",
+      });
+    }
 
     const comment = await Comment.create({
       task,
@@ -11,13 +20,15 @@ const addComment = async (req, res) => {
       message,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Comment added",
       comment,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Add Comment Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -31,12 +42,14 @@ const getTaskComments = async (req, res) => {
       task: req.params.taskId,
     }).populate("user", "name role");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       comments,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get Comments Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -68,12 +81,14 @@ const deleteComment = async (req, res) => {
 
     await comment.deleteOne();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Comment deleted",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Delete Comment Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

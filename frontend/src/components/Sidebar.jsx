@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom";
-
 import { FaHome, FaFolder, FaTasks, FaUser } from "react-icons/fa";
 
 import "../styles/Sidebar.css";
@@ -10,7 +9,7 @@ function Sidebar() {
       <div className="logo">TeamSync</div>
 
       <nav>
-        <NavLink to="/dashboard">
+        <NavLink to="/dashboard" end>
           <FaHome />
           <span>Dashboard</span>
         </NavLink>

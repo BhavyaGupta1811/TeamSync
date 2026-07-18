@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FaTimes, FaAngleDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 import api from "../services/api";
 
 import "../styles/Modal.css";
-import { FaAngleDown } from "react-icons/fa";
 
 function CreateProject({ close, refresh }) {
   const [users, setUsers] = useState([]);
   const [showMembers, setShowMembers] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const dropdownRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -20,9 +21,33 @@ function CreateProject({ close, refresh }) {
     teamMembers: [],
   });
 
-  useEffect(() => {
-    fetchUsers();
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await api.get("/users");
+
+      setUsers(
+        (res.data.users || []).filter((user) => user.role === "Team Member"),
+      );
+    } catch (error) {
+      toast.error("Unable to load team members.");
+    }
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      if (mounted) {
+        await fetchUsers();
+      }
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, [fetchUsers]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -37,20 +62,13 @@ function CreateProject({ close, refresh }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const fetchUsers = async () => {
-    try {
-      const res = await api.get("/users");
-
-      setUsers(res.data.users.filter((user) => user.role === "Team Member"));
-    } catch (error) {
-      toast.error("Unable to load team members.");
-    }
-  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -80,6 +98,8 @@ function CreateProject({ close, refresh }) {
     }
 
     try {
+      setLoading(true);
+
       await api.post("/projects", form);
 
       toast.success("Project created successfully.");
@@ -98,7 +118,11 @@ function CreateProject({ close, refresh }) {
 
       close();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create project.");
+      toast.error(
+        error?.response?.data?.message || "Failed to create project.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -185,7 +209,7 @@ function CreateProject({ close, refresh }) {
 
           {showMembers && (
             <div className="select-dropdown">
-              {users.length > 0 ? (
+              {users.length ? (
                 users.map((user) => (
                   <label key={user._id} className="checkbox-item">
                     <input
@@ -204,8 +228,8 @@ function CreateProject({ close, refresh }) {
           )}
         </div>
 
-        <button type="submit" className="submit-btn">
-          Create Project
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Creating..." : "Create Project"}
         </button>
       </form>
     </div>

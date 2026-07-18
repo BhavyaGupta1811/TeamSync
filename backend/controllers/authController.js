@@ -5,7 +5,10 @@ const generateToken = require("../utils/generateToken");
 // Register
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    let { name, email, password, role } = req.body;
+
+    name = name?.trim();
+    email = email?.trim().toLowerCase();
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({
@@ -34,7 +37,7 @@ const registerUser = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "User registered successfully",
       token,
@@ -46,7 +49,9 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Register Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -56,7 +61,9 @@ const registerUser = async (req, res) => {
 // Login
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email?.trim().toLowerCase();
 
     if (!email || !password) {
       return res.status(400).json({
@@ -85,7 +92,7 @@ const loginUser = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Login successful",
       token,
@@ -97,7 +104,9 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Login Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -106,7 +115,7 @@ const loginUser = async (req, res) => {
 
 // Profile
 const getProfile = async (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     user: req.user,
   });

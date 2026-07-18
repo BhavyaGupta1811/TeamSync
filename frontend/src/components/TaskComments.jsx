@@ -1,53 +1,49 @@
 import { useEffect, useState } from "react";
-
 import { FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "react-toastify";
 
 import "../styles/Comments.css";
 
 function TaskComments({ taskId }) {
-  const [comments, setComments] = useState([]);
   const { user } = useAuth();
+
+  const [comments, setComments] = useState([]);
   const [message, setMessage] = useState("");
 
   const fetchComments = async () => {
     try {
       const res = await api.get(`/comments/task/${taskId}`);
-
-      setComments(res.data.comments);
+      setComments(res.data.comments || []);
     } catch (error) {
-      toast.error("Unable to load comments");
+      toast.error("Unable to load comments.");
     }
   };
 
   useEffect(() => {
-    fetchComments();
-  }, []);
+    if (taskId) {
+      fetchComments();
+    }
+  }, [taskId]);
 
   const addComment = async () => {
     if (!message.trim()) return;
 
     try {
-      await api.post(
-        "/comments",
-
-        {
-          task: taskId,
-
-          message,
-        },
-      );
+      await api.post("/comments", {
+        task: taskId,
+        message: message.trim(),
+      });
 
       setMessage("");
 
       fetchComments();
 
-      toast.success("Comment added");
+      toast.success("Comment added.");
     } catch (error) {
-      toast.error("Comment failed");
+      toast.error(error.response?.data?.message || "Comment failed.");
     }
   };
 
@@ -56,8 +52,10 @@ function TaskComments({ taskId }) {
       await api.delete(`/comments/${id}`);
 
       fetchComments();
+
+      toast.success("Comment deleted.");
     } catch (error) {
-      toast.error("Delete failed");
+      toast.error(error.response?.data?.message || "Delete failed.");
     }
   };
 
@@ -72,23 +70,32 @@ function TaskComments({ taskId }) {
           placeholder="Write a comment"
         />
 
-        <button onClick={addComment}>Send</button>
+        <button type="button" onClick={addComment}>
+          Send
+        </button>
       </div>
 
       <div className="comments-list">
-        {comments.map((comment) => (
-          <div className="comment" key={comment._id}>
-            <div>
-              <strong>{comment.user?.name}</strong>
+        {comments.length > 0 ? (
+          comments.map((comment) => (
+            <div className="comment" key={comment._id}>
+              <div>
+                <strong>{comment.user?.name}</strong>
 
-              <p>{comment.message}</p>
+                <p>{comment.message}</p>
+              </div>
+
+              {(comment.user?._id === user?._id || user?.role === "Admin") && (
+                <FaTrash
+                  style={{ cursor: "pointer" }}
+                  onClick={() => deleteComment(comment._id)}
+                />
+              )}
             </div>
-
-            {(comment.user?._id === user?._id || user?.role === "Admin") && (
-              <FaTrash onClick={() => deleteComment(comment._id)} />
-            )}
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No comments yet.</p>
+        )}
       </div>
     </div>
   );

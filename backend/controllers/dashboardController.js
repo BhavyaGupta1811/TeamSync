@@ -10,7 +10,6 @@ const getDashboardStats = async (req, res) => {
     // Admin -> everything
     if (req.user.role === "Admin") {
       projectQuery = {};
-
       taskQuery = {};
     }
 
@@ -53,41 +52,37 @@ const getDashboardStats = async (req, res) => {
 
     const pendingTasks = await Task.countDocuments({
       ...taskQuery,
-
       status: {
         $in: ["Todo", "In Progress"],
       },
     });
 
+    const now = new Date();
+
     const overdueTasks = await Task.countDocuments({
       ...taskQuery,
-
       dueDate: {
-        $lt: new Date(),
+        $lt: now,
       },
-
       status: {
         $ne: "Completed",
       },
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-
       stats: {
         projects,
-
         completedTasks,
-
         pendingTasks,
-
         overdueTasks,
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    console.error("Dashboard Stats Error:", error);
 
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
@@ -103,7 +98,7 @@ const getTaskChartData = async (req, res) => {
       taskQuery = {};
     }
 
-    // Manager
+    // Project Manager
     else if (req.user.role === "Project Manager") {
       const projects = await Project.find({
         manager: req.user._id,
@@ -118,7 +113,7 @@ const getTaskChartData = async (req, res) => {
       };
     }
 
-    // Member
+    // Team Member
     else {
       taskQuery = {
         assignedTo: req.user._id,
@@ -127,35 +122,31 @@ const getTaskChartData = async (req, res) => {
 
     const todo = await Task.countDocuments({
       ...taskQuery,
-
       status: "Todo",
     });
 
     const inProgress = await Task.countDocuments({
       ...taskQuery,
-
       status: "In Progress",
     });
 
     const completed = await Task.countDocuments({
       ...taskQuery,
-
       status: "Completed",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-
       chart: {
         labels: ["Todo", "In Progress", "Completed"],
-
         values: [todo, inProgress, completed],
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    console.error("Task Chart Data Error:", error);
 
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }

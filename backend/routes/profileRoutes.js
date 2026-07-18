@@ -2,7 +2,6 @@ const express = require("express");
 
 const {
   updateProfile,
-  changePassword,
 } = require("../controllers/profileController");
 
 const protect = require("../middleware/authMiddleware");

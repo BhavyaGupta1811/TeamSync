@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import StatCard from "../components/StatCard";
@@ -33,33 +32,50 @@ function Dashboard() {
     pendingTasks: 0,
     overdueTasks: 0,
   });
-  const [loading, setLoading] = useState(true);
+
   const [chart, setChart] = useState([]);
-
-  const fetchDashboard = async () => {
-    try {
-      setLoading(true);
-      const statsRes = await api.get("/dashboard/stats");
-
-      setStats(statsRes.data.stats);
-
-      const chartRes = await api.get("/dashboard/chart");
-
-      const data = chartRes.data.chart.labels.map((label, index) => ({
-        name: label,
-
-        value: chartRes.data.chart.values[index],
-      }));
-
-      setChart(data);
-      setLoading(false);
-    } catch (error) {
-      toast.error("Unable to load dashboard");
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+
+        const [statsRes, chartRes] = await Promise.all([
+          api.get("/dashboard/stats"),
+          api.get("/dashboard/chart"),
+        ]);
+
+        if (!mounted) return;
+
+        setStats(statsRes.data.stats);
+
+        const chartData = chartRes.data.chart.labels.map((label, index) => ({
+          name: label,
+          value: chartRes.data.chart.values[index],
+        }));
+
+        setChart(chartData);
+      } catch (error) {
+        if (mounted) {
+          toast.error(
+            error.response?.data?.message || "Unable to load dashboard",
+          );
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchDashboard();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {
@@ -117,11 +133,11 @@ function Dashboard() {
               <BarChart data={chart}>
                 <XAxis dataKey="name" />
 
-                <YAxis />
+                <YAxis allowDecimals={false} />
 
                 <Tooltip />
 
-                <Bar dataKey="value" fill="#6366f1" />
+                <Bar dataKey="value" fill="#6366f1" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

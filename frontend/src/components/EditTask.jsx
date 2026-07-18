@@ -1,24 +1,24 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import api from "../services/api";
-import { toast } from "react-toastify";
 
 import "../styles/Modal.css";
 
 function EditTask({ task, close, refresh }) {
   const [form, setForm] = useState({
-    title: task.title,
-    description: task.description,
-    assignedTo: task.assignedTo?._id || "",
-    dueDate: task.dueDate?.split("T")[0] || "",
+    title: task?.title || "",
+    description: task?.description || "",
+    assignedTo: task?.assignedTo?._id || "",
+    dueDate: task?.dueDate ? task.dueDate.split("T")[0] : "",
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const submit = async (e) => {
@@ -27,13 +27,12 @@ function EditTask({ task, close, refresh }) {
     try {
       await api.put(`/tasks/${task._id}`, form);
 
-      toast.success("Task updated");
+      toast.success("Task updated successfully.");
 
       refresh();
-
       close();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Update failed");
+      toast.error(error.response?.data?.message || "Update failed.");
     }
   };
 
@@ -43,15 +42,21 @@ function EditTask({ task, close, refresh }) {
         <div className="modal-head">
           <h2>Edit Task</h2>
 
-          <FaTimes onClick={close} />
+          <FaTimes className="close-icon" onClick={close} />
         </div>
 
-        <input name="title" value={form.title} onChange={handleChange} />
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          required
+        />
 
         <textarea
           name="description"
           value={form.description}
           onChange={handleChange}
+          required
         />
 
         <input
@@ -59,9 +64,12 @@ function EditTask({ task, close, refresh }) {
           name="dueDate"
           value={form.dueDate}
           onChange={handleChange}
+          required
         />
 
-        <button>Update Task</button>
+        <button type="submit" className="submit-btn">
+          Update Task
+        </button>
       </form>
     </div>
   );

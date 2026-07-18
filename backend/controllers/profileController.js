@@ -15,16 +15,16 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    user.name = name || user.name;
+    user.name = name?.trim() || user.name;
 
-    // password update only if entered
+    // Password update only if entered
     if (password && password.trim() !== "") {
       user.password = await bcrypt.hash(password, 10);
     }
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
       user: {
@@ -35,12 +35,15 @@ const updateProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Update Profile Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
 module.exports = {
   updateProfile,
 };

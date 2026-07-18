@@ -2,36 +2,45 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+
 import { useAuth } from "../context/AuthContext";
+
 import "../styles/Auth.css";
+
 function Login() {
+  const navigate = useNavigate();
+  const { login, loading } = useAuth();
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-
-  const { login } = useAuth();
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.email.trim() || !form.password.trim()) {
+      return toast.error("Please fill in all fields.");
+    }
+
     try {
-      await login(form);
+      await login({
+        email: form.email.trim(),
+        password: form.password,
+      });
 
       toast.success("Login successful");
 
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
@@ -51,8 +60,10 @@ function Login() {
             type="email"
             name="email"
             placeholder="Email"
+            autoComplete="email"
             value={form.email}
             onChange={handleChange}
+            required
           />
         </div>
 
@@ -63,19 +74,25 @@ function Login() {
             type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Password"
+            autoComplete="current-password"
             value={form.password}
             onChange={handleChange}
+            required
           />
 
-          <span
+          <button
+            type="button"
             className="password-eye"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
+          </button>
         </div>
 
-        <button>Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
     </div>
   );

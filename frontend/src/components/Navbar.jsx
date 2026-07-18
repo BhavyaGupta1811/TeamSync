@@ -171,7 +171,7 @@ function Navbar() {
               {notifications.length > 0 ? (
                 notifications.map((notification) => (
                   <div className="notification-item" key={notification._id}>
-                    <FaBell/> {notification.message}
+                    <FaBell /> {notification.message}
                   </div>
                 ))
               ) : (

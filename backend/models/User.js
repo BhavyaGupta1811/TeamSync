@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
 
     password: {
@@ -25,10 +26,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["Admin", "Project Manager", "Team Member"],
       default: "Team Member",
+      index: true,
     },
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
