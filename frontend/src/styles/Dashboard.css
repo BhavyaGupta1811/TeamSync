@@ -1,151 +1,287 @@
+/* ==========================================
+   DASHBOARD LAYOUT
+========================================== */
+
 .dashboard-layout {
-    min-height: 100vh;
+  min-height: 100vh;
 }
 
 .dashboard-content {
-    margin-left: 260px;
-    padding: 110px 35px 40px;
+  margin-left: 260px;
+  padding: 110px 32px 40px;
+  min-height: 100vh;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.dashboard-header {
+  margin-bottom: 32px;
 }
 
 .dashboard-header h1 {
-    font-size: 32px;
-    margin-bottom: 8px;
+  font-size: clamp(2rem, 4vw, 2.3rem);
+  margin-bottom: 8px;
+  color: var(--text-primary);
 }
 
 .dashboard-header p {
-    color: var(--text-secondary);
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
+
+/* ==========================================
+   STATS GRID
+========================================== */
 
 .stats-grid {
-    margin-top: 35px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
 }
 
+/* ==========================================
+   STAT CARD
+========================================== */
+
 .stat-card {
-    padding: 25px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    box-shadow: var(--shadow);
-    transition: .3s;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  min-height: 120px;
+
+  padding: 24px;
+
+  background: var(--card-bg);
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
+
+  transition: all 0.25s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .stat-icon {
-    width: 55px;
-    height: 55px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
+  width: 56px;
+  height: 56px;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.4rem;
 }
 
 .stat-card h3 {
-    font-size: 28px;
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  color: var(--text-primary);
 }
 
 .stat-card p {
-    color: var(--text-secondary);
+  color: var(--text-secondary);
 }
 
+/* ==========================================
+   ICON COLORS
+========================================== */
+
 .primary .stat-icon {
-    background: #312e81;
+  background: #312e81;
 }
 
 .success .stat-icon {
-    background: #14532d;
+  background: #14532d;
 }
 
 .warning .stat-icon {
-    background: #78350f;
+  background: #78350f;
 }
 
 .danger .stat-icon {
-    background: #7f1d1d;
+  background: #7f1d1d;
 }
 
+/* ==========================================
+   PANELS
+========================================== */
+
 .dashboard-panels {
-    margin-top: 35px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
 
 .panel {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 25px;
+  padding: 24px;
+
+  background: var(--card-bg);
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
 }
 
 .panel h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
+  color: var(--text-primary);
 }
 
+/* ==========================================
+   CHART
+========================================== */
+
+.chart-panel {
+  min-height: 380px;
+}
+
+/* ==========================================
+   PROJECT ITEMS
+========================================== */
+
 .project-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.project-item:last-child {
+  border-bottom: none;
 }
 
 .project-item small {
-    color: var(--text-secondary);
+  color: var(--text-secondary);
 }
 
+/* ==========================================
+   PROGRESS BAR
+========================================== */
+
 .progress {
-    height: 12px;
-    background: #1e293b;
-    border-radius: 20px;
-    overflow: hidden;
+  height: 10px;
+
+  background: rgba(255,255,255,.08);
+
+  border-radius: 999px;
+
+  overflow: hidden;
 }
 
 .progress span {
-    display: block;
-    height: 100%;
-    width: 75%;
-    background: var(--primary);
+  display: block;
+  height: 100%;
+
+  background: var(--primary);
+
+  border-radius: inherit;
 }
 
 .progress-box p {
-    margin-top: 15px;
-    color: var(--text-secondary);
+  margin-top: 12px;
+  color: var(--text-secondary);
 }
 
-/* Tablet */
+/* ==========================================
+   LARGE TABLETS
+========================================== */
 
-@media (max-width: 1100px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+@media (max-width:1100px){
+
+  .dashboard-content{
+    padding:100px 24px 30px;
+  }
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .dashboard-panels{
+    grid-template-columns:1fr;
+  }
+
 }
 
-/* Mobile */
+/* ==========================================
+   MOBILE
+========================================== */
 
-@media (max-width: 600px) {
-    .dashboard-content {
-        margin-left: 0;
-        padding: 90px 15px 90px;
-    }
+@media (max-width:768px){
 
-    .dashboard-header h1 {
-        font-size: 26px;
-    }
+  .dashboard-content{
+    margin-left:0;
+    padding:90px 18px 90px;
+  }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+  .stats-grid{
+    grid-template-columns:1fr;
+    gap:18px;
+  }
 
-    .dashboard-panels {
-        grid-template-columns: 1fr;
-    }
+  .dashboard-header h1{
+    font-size:1.8rem;
+  }
+
+  .stat-card{
+    padding:20px;
+    min-height:100px;
+  }
+
+  .stat-icon{
+    width:50px;
+    height:50px;
+    font-size:1.2rem;
+  }
+
+  .stat-card h3{
+    font-size:1.5rem;
+  }
+
+  .panel{
+    padding:20px;
+  }
+
+  .chart-panel{
+    min-height:320px;
+  }
+
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width:480px){
+
+  .dashboard-content{
+    padding:85px 14px 85px;
+  }
+
+  .dashboard-header{
+    margin-bottom:24px;
+  }
+
+  .dashboard-header p{
+    font-size:.95rem;
+  }
+
 }

@@ -1,22 +1,48 @@
+/* ==========================================
+   LOADER
+========================================== */
+
 .loader-container {
-    min-height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  min-height: 220px;
+
+  padding: 2rem;
 }
 
 .loader-icon {
-    font-size: 35px;
-    color: var(--primary);
-    animation: spin 1s linear infinite;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+
+  color: var(--primary);
+
+  animation: loader-spin 0.9s linear infinite;
+
+  will-change: transform;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
+/* ==========================================
+   ANIMATION
+========================================== */
 
-    to {
-        transform: rotate(360deg);
-    }
+@keyframes loader-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-icon {
+    animation: none;
+  }
 }

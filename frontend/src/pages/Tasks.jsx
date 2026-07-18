@@ -12,12 +12,12 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 import { toast } from "react-toastify";
-
 import "../styles/Tasks.css";
+import DeleteTask from "../components/DeleteProject";
 
 function Tasks() {
   const { user } = useAuth();
-
+  const [deleteTask, setDeleteTask] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
 
@@ -107,20 +107,6 @@ function Tasks() {
       toast.error(error.response?.data?.message || "Status update failed.");
     } finally {
       setStatusLoading(false);
-    }
-  };
-
-  const deleteTask = async (id) => {
-    if (!window.confirm("Delete this task?")) return;
-
-    try {
-      await api.delete(`/tasks/${id}`);
-
-      toast.success("Task deleted successfully.");
-
-      fetchTasks();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Unable to delete task.");
     }
   };
 
@@ -229,7 +215,7 @@ function Tasks() {
                               <FaTrash
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  deleteTask(task._id);
+                                  setDeleteTask(task);
                                 }}
                               />
                             </div>
@@ -262,6 +248,14 @@ function Tasks() {
           <EditTask
             task={editTask}
             close={() => setEditTask(null)}
+            refresh={fetchTasks}
+          />
+        )}
+
+        {deleteTask && (
+          <DeleteTask
+            task={deleteTask}
+            close={() => setDeleteTask(null)}
             refresh={fetchTasks}
           />
         )}

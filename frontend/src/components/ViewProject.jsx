@@ -19,11 +19,7 @@ function ViewProject({ project, close }) {
         <div className="modal-head">
           <h2>Project Details</h2>
 
-          <FaTimes
-            className="close-icon"
-            onClick={close}
-            style={{ cursor: "pointer" }}
-          />
+          <FaTimes className="close-icon" onClick={close} />
         </div>
 
         <div className="project-view">
@@ -82,9 +78,8 @@ function ViewProject({ project, close }) {
 
           <button
             type="button"
-            className="primary-btn"
+            className="primary-btn  modal-close-btn"
             onClick={close}
-            style={{ width: "100%", marginTop: "20px" }}
           >
             Close
           </button>
