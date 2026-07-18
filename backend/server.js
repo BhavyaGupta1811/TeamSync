@@ -11,7 +11,8 @@ const commentRoutes = require("./routes/commentRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const searchRoutes = require("./routes/searchRoutes");
 const profileRoutes = require("./routes/profileRoutes");
-const reportRoutes = require("./routes/reportRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+
 const errorHandler = require("./middleware/errorMiddleware");
 // Load environment variables
 dotenv.config();
@@ -38,8 +39,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/api/reports", reportRoutes);
-
+app.use("/api/notifications", notificationRoutes);
 app.use(errorHandler);
 // Server
 const PORT = process.env.PORT || 5000;

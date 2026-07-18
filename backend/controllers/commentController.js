@@ -55,6 +55,17 @@ const deleteComment = async (req, res) => {
       });
     }
 
+    // Only comment owner or Admin can delete
+    if (
+      comment.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "Admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to delete this comment",
+      });
+    }
+
     await comment.deleteOne();
 
     res.status(200).json({

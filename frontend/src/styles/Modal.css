@@ -1,0 +1,373 @@
+/* =======================
+   Modal Overlay
+======================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 200;
+    overflow-y: auto;
+}
+
+/* =======================
+   Modal Box
+======================= */
+
+.modal-box {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.modal-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-box::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+/* =======================
+   Header
+======================= */
+
+.modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-head h2 {
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.close-icon {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* =======================
+   Inputs
+======================= */
+
+.modal-box input,
+.modal-box textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    outline: none;
+    transition: .3s;
+}
+
+.modal-box textarea {
+    min-height: 120px;
+    resize: none;
+}
+
+.modal-box input:focus,
+.modal-box textarea:focus {
+    border-color: var(--primary);
+}
+
+/* =======================
+   Date Group
+======================= */
+
+.date-group {
+    display: flex;
+    gap: 16px;
+}
+
+.date-group>div {
+    flex: 1;
+}
+
+.date-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* =======================
+   Custom Select
+======================= */
+
+.select-label {
+    display: block;
+    margin: 6px 0 10px;
+    font-weight: 600;
+}
+
+.custom-select {
+    position: relative;
+}
+
+.select-header {
+    width: 100%;
+    height: 54px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 16px;
+
+    background: var(--card-bg);
+    color: var(--text-primary);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+    font-size: 15px;
+
+    margin: 0;
+
+    box-shadow: none;
+
+    transform: none;
+}
+
+.select-header:hover {
+    border-color: var(--primary);
+    background: var(--card-bg);
+    transform: none;
+    box-shadow: none;
+}
+
+.arrow {
+    transition: .3s;
+    font-size: 14px;
+}
+
+.arrow.rotate {
+    transform: rotate(180deg);
+}
+
+.select-dropdown {
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card-bg);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.select-dropdown::-webkit-scrollbar {
+    width: 7px;
+}
+
+.select-dropdown::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 20px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.checkbox-item:hover {
+    background: rgba(99, 102, 241, .08);
+}
+
+.checkbox-item input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-item span {
+    color: var(--text-primary);
+}
+
+/* =======================
+   Submit Button
+======================= */
+
+.submit-btn {
+    width: 100%;
+    height: 52px;
+    margin-top: 12px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: var(--primary);
+    color: #fff;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, .25);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.submit-btn:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* =======================
+   View Project
+======================= */
+
+.project-view {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.view-section h3 {
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.view-section p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.view-row {
+    display: flex;
+    gap: 30px;
+}
+
+.view-row .view-section {
+    flex: 1;
+}
+
+.member-list {
+    padding-left: 18px;
+    color: var(--text-secondary);
+}
+
+.member-list li {
+    margin-bottom: 6px;
+}
+
+/* =======================
+   Delete Modal
+======================= */
+
+.delete-modal {
+    max-width: 480px;
+}
+
+.delete-content {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.delete-icon {
+    font-size: 55px;
+    color: #ef4444;
+    margin-bottom: 18px;
+}
+
+.delete-content h3 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.delete-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.delete-actions button {
+    flex: 1;
+}
+
+.secondary-btn,
+.danger-btn {
+    height: 48px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.secondary-btn {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.secondary-btn:hover {
+    background: var(--card-bg);
+}
+
+.danger-btn {
+    border: none;
+    background: #ef4444;
+    color: white;
+}
+
+.danger-btn:hover {
+    background: #dc2626;
+}
+
+/* =======================
+   Responsive
+======================= */
+
+@media (max-width:600px) {
+
+    .modal-box {
+        padding: 22px;
+        border-radius: 16px;
+    }
+
+    .date-group,
+    .view-row,
+    .delete-actions {
+        flex-direction: column;
+    }
+}

@@ -40,3 +40,45 @@ backend
 │   └── generateToken.js
 │
 └── server.js
+
+src
+│
+├── components
+│   ├── Sidebar.jsx
+│   ├── Navbar.jsx
+│   ├── StatCard.jsx
+│   ├── Loader.jsx
+│   ├── CreateProject.jsx
+│   ├── CreateTask.jsx
+│   └── TaskComments.jsx
+│
+├── pages
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── Dashboard.jsx
+│   ├── Projects.jsx
+│   ├── Tasks.jsx
+│   └── Profile.jsx
+│
+├── styles
+│   ├── global.css
+│   ├── Dashboard.css
+│   ├── Navbar.css
+│   ├── Sidebar.css
+│   ├── Auth.css
+│   ├── Projects.css
+│   ├── Tasks.css
+│   ├── Profile.css
+│   ├── Modal.css
+│   ├── Comments.css
+│   └── Loader.css
+│
+├── services
+│   └── api.js
+│
+├── context
+│   └── AuthContext.jsx
+│
+├── App.jsx
+├── main.jsx
+└── routes.jsx
